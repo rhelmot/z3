@@ -43,6 +43,16 @@ jobs:
     - ${{if eq(variables['runRegressions'], 'True')}}:
       - template: scripts/test-regressions.yml
 
+- job: "ManylinuxPythonBuild"
+  displayName: "Python bindings (manylinux Centos) build"
+  pool:
+    vmImage: "ubuntu-latest"
+  container: "quay.io/pypa/manylinux2014_x86_64:latest"
+  steps:
+  - script: "cd src/api/python && python -m build && cd ../../.."
+  - script: "python -m venv ./env"
+  - script: ". ./env/bin/activate && pip install ./src/api/python/dist/*.whl && python src/api/python/z3test.py z3 && python src/api/python/z3test.py z3num"
+
 - job: LinuxBuildsArm64
   displayName: "ManyLinux ARM64 build"
   variables:
